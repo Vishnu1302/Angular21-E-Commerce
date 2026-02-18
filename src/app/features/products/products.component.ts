@@ -1,7 +1,10 @@
-import { Component, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, signal, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, map, startWith } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { ProductCardComponent } from './product-card/product-card.component';
-import { Product, AddToCartEvent, ProductCategory } from './models/product.model';
+import { Product, AddToCartEvent } from './models/product.model';
+import { ProductService } from '../../core/services/product.service';
 
 /**
  * ===========================================
@@ -9,17 +12,24 @@ import { Product, AddToCartEvent, ProductCategory } from './models/product.model
  * ===========================================
  * 
  * This component demonstrates:
- * 1. Passing data DOWN to child via @Input()
- * 2. Receiving events FROM child via @Output()
- * 3. Immutable updates (important for OnPush)
+ * 1. SERVICE INJECTION - Using inject() to get ProductService
+ * 2. RXJS SUBSCRIPTION - Subscribing to Observable data
+ * 3. LIFECYCLE HOOKS - OnInit to load, OnDestroy to cleanup
+ * 4. Passing data DOWN to child via @Input()
+ * 5. Receiving events FROM child via @Output()
  * 
- * Parent-Child Flow:
+ * Data Flow:
  * 
+ *   ProductService (Singleton)
+ *         │
+ *         │ getProducts() → Observable<Product[]>
+ *         ▼
  *   ┌─────────────────────────────────────────┐
  *   │  ProductsComponent (Parent)             │
+ *   │  - inject(ProductService)               │
+ *   │  - subscribe() to Observable            │
  *   │                                         │
  *   │  products signal ───@Input()───►        │
- *   │                                         │
  *   │  handleAddToCart() ◄──@Output()───      │
  *   │                                         │
  *   │     ┌─────────────────────────────┐     │
@@ -36,50 +46,40 @@ import { Product, AddToCartEvent, ProductCategory } from './models/product.model
   styleUrl: './products.component.scss'
 })
 export class ProductsComponent {
-  private readonly router = Router;
   
   // ========================================
-  // PARENT STATE (will be passed to children)
+  // DEPENDENCY INJECTION
   // ========================================
   
-  readonly products = signal<Product[]>([
-    { 
-      id: 1, 
-      name: 'Wireless Headphones', 
-      price: 79.99, 
-      image: 'https://picsum.photos/seed/headphones/300/200',
-      category: 'electronics',
-      inStock: true,
-      rating: 4
-    },
-    { 
-      id: 2, 
-      name: 'Smart Watch', 
-      price: 199.99, 
-      image: 'https://picsum.photos/seed/watch/300/200',
-      category: 'electronics',
-      inStock: true,
-      rating: 5
-    },
-    { 
-      id: 3, 
-      name: 'Cotton T-Shirt', 
-      price: 24.99, 
-      image: 'https://picsum.photos/seed/tshirt/300/200',
-      category: 'clothing',
-      inStock: false,
-      rating: 3
-    },
-    { 
-      id: 4, 
-      name: 'JavaScript Book', 
-      price: 39.99, 
-      image: 'https://picsum.photos/seed/book/300/200',
-      category: 'books',
-      inStock: true,
-      rating: 5
-    },
-  ]);
+  // inject() - Modern way to inject services (Angular 14+)
+  private readonly productService = inject(ProductService);
+  
+  // ========================================
+  // COMPONENT STATE with toSignal()
+  // ========================================
+  
+  /**
+   * toSignal() - Converts Observable to Signal
+   * 
+   * Benefits over manual subscription:
+   * ✅ Auto-unsubscribes when component is destroyed
+   * ✅ No OnInit/OnDestroy lifecycle hooks needed
+   * ✅ No Subscription variable to manage
+   * ✅ Works seamlessly with signals and computed()
+   */
+  private readonly productsState = toSignal(
+    this.productService.getProducts().pipe(
+      map(products => ({ data: products, loading: false, error: '' })),
+      startWith({ data: [] as Product[], loading: true, error: '' }),
+      catchError(err => of({ data: [] as Product[], loading: false, error: 'Failed to load products' }))
+    ),
+    { initialValue: { data: [] as Product[], loading: true, error: '' } }
+  );
+  
+  // Computed values derived from productsState
+  readonly products = computed(() => this.productsState().data);
+  readonly isLoading = computed(() => this.productsState().loading);
+  readonly errorMessage = computed(() => this.productsState().error);
   
   // Cart items (receives data from child via @Output)
   readonly cartItems = signal<AddToCartEvent[]>([]);
@@ -125,30 +125,6 @@ export class ProductsComponent {
   // Handle favorite toggle from child
   handleFavoriteToggle(event: { productId: number; isFavorite: boolean }): void {
     console.log('❤️ [Parent] Received favorite toggle:', event);
-  }
-
-  // ========================================
-  // DEMO: Change Detection Triggers
-  // ========================================
-  
-  // This WON'T trigger OnPush child re-render (same reference)
-  mutateProductBad(): void {
-    const products = this.products();
-    products[0].price = products[0].price + 10;  // Mutating same object!
-    console.log('⚠️ [Parent] Mutated product (BAD - OnPush won\'t detect)');
-    console.log('Price is now:', products[0].price, 'but UI may not update!');
-  }
-  
-  // This WILL trigger OnPush child re-render (new reference)
-  updateProductGood(): void {
-    this.products.update(products => 
-      products.map((p, index) => 
-        index === 0 
-          ? { ...p, price: p.price + 10 }  // New object reference!
-          : p
-      )
-    );
-    console.log('✅ [Parent] Updated product immutably (GOOD - OnPush will detect)');
   }
   
   // Toggle featured product

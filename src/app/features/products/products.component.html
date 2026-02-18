@@ -17,17 +17,7 @@
         <button (click)="toggleFeatured()">
           Toggle Featured (ID: {{ featuredProductId() }})
         </button>
-      </div>
-      
-      <div class="control-group">
-        <strong>Change Detection:</strong>
-        <button (click)="mutateProductBad()" class="btn-bad">
-          ❌ Mutate (Bad)
-        </button>
-        <button (click)="updateProductGood()" class="btn-good">
-          ✅ Immutable Update (Good)
-        </button>
-      </div>
+      </div> 
     </div>
     
     <div class="cart-summary">
@@ -38,33 +28,45 @@
   </div>
 
   <!-- Products Grid -->
-  <div class="products-grid">
-    @for (product of products(); track product.id) {
-      <!--
-        @Input() bindings (Parent → Child):
-        - [product]="product" - Pass product data
-        - [showRating]="showRatings()" - Pass boolean
-        - [featured]="..." - Uses alias (maps to isFeatured)
-        - [maxQuantity]="5" - With transform
-        
-        @Output() bindings (Child → Parent):
-        - (addToCart)="handleAddToCart($event)" - Receive event
-        - (viewDetails)="handleViewDetails($event)" - Receive event
-        - (favoriteToggled)="..." - Uses alias output
-      -->
-      <app-product-card
-        [product]="product"
-        [showRating]="showRatings()"
-        [featured]="product.id === featuredProductId()"
-        [maxQuantity]="5"
-        (addToCart)="handleAddToCart($event)"
-        (viewDetails)="handleViewDetails($event)"
-        (favoriteToggled)="handleFavoriteToggle($event)"
-      />
-    } @empty {
-      <p>No products available</p>
-    }
-  </div>
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading products from service...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="error-state">
+      <p>{{ errorMessage() }}</p>
+      <p><small>Refresh the page to try again</small></p>
+    </div>
+  } @else {
+    <div class="products-grid">
+      @for (product of products(); track product.id) {
+        <!--
+          @Input() bindings (Parent → Child):
+          - [product]="product" - Pass product data
+          - [showRating]="showRatings()" - Pass boolean
+          - [featured]="..." - Uses alias (maps to isFeatured)
+          - [maxQuantity]="5" - With transform
+          
+          @Output() bindings (Child → Parent):
+          - (addToCart)="handleAddToCart($event)" - Receive event
+          - (viewDetails)="handleViewDetails($event)" - Receive event
+          - (favoriteToggled)="..." - Uses alias output
+        -->
+        <app-product-card
+          [product]="product"
+          [showRating]="showRatings()"
+          [featured]="product.id === featuredProductId()"
+          [maxQuantity]="5"
+          (addToCart)="handleAddToCart($event)"
+          (viewDetails)="handleViewDetails($event)"
+          (favoriteToggled)="handleFavoriteToggle($event)"
+        />
+      } @empty {
+        <p>No products available</p>
+      }
+    </div>
+  }
   
   <!-- Explanation Panel -->
   <div class="explanation-panel">

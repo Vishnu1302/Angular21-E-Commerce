@@ -30,7 +30,6 @@ interface Topic {
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  readonly title = signal('Angular Learning Hub');
   
   /**
    * Topics covered in this learning application
@@ -46,29 +45,36 @@ export class HomeComponent {
     },
     {
       id: 2,
-      title: 'Reactive Forms + Signals + Dependency Injection',
+      title: 'Reactive Forms + Signals',
       description: 'Form handling with modern Angular signals',
       route: '/login',
       concepts: ['FormBuilder', 'FormGroup', 'Validators', 'signal()', 'computed()', 'effect()']
     },
     {
       id: 3,
-      title: 'Parent-Child Communication , Change Detection',
-      description: 'Component interaction patterns',
+      title: 'Services + RxJS Observables + DI',
+      description: 'Data fetching with dependency injection',
       route: '/products',
-      concepts: ['input()', 'output()', '@Input/@Output', 'EventEmitter', 'OnPush', 'ngOnChanges vs effect()']
+      concepts: ['@Injectable', 'inject()', 'Observable', 'subscribe()', 'of()', 'Subscription']
     },
     {
       id: 4,
-      title: 'Domain Driven Design Setup',
-      description: 'Project structure and organization',
-      route: null,
-      concepts: ['features/', 'shared/', 'core/', 'models/', 'Standalone components']
+      title: 'Parent-Child + Change Detection',
+      description: 'Component interaction patterns',
+      route: '/products',
+      concepts: ['input()', 'output()', 'EventEmitter', 'OnPush', 'ngOnChanges']
     },
     {
       id: 5,
+      title: 'Project Structure (DDD)',
+      description: 'Domain-driven folder organization',
+      route: null,
+      concepts: ['features/', 'shared/', 'core/', 'models/', 'Standalone']
+    },
+    {
+      id: 6,
       title: 'TypeScript',
-      description: 'Strong typing throughout the application',
+      description: 'Strong typing throughout the app',
       route: null,
       concepts: ['Interfaces', 'Types', 'Generics', 'readonly', 'Strict mode']
     }

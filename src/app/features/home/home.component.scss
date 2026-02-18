@@ -92,8 +92,10 @@
   font-size: 0.85rem;
   background: white;
   border-radius: 8px;
-  overflow: hidden;
   border: 1px solid #e2e8f0;
+  display: block;
+  overflow-y: auto;
+  max-height: 100%;
 
   thead {
     background: #f1f5f9;
