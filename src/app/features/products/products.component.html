@@ -1,0 +1,93 @@
+<div class="products-container">
+  <header class="products-header">
+    <h1>Our Products</h1>
+    <p>Learn @Input(), @Output(), and ChangeDetection</p>
+  </header>
+  
+  <!-- Control Panel -->
+  <div class="control-panel">
+    <h4>🎮 Control Panel (Parent Component)</h4>
+    
+    <div class="controls">
+      <div class="control-group">
+        <strong>@Input() Demos:</strong>
+        <button (click)="toggleRatings()">
+          {{ showRatings() ? 'Hide' : 'Show' }} Ratings
+        </button>
+        <button (click)="toggleFeatured()">
+          Toggle Featured (ID: {{ featuredProductId() }})
+        </button>
+      </div>
+      
+      <div class="control-group">
+        <strong>Change Detection:</strong>
+        <button (click)="mutateProductBad()" class="btn-bad">
+          ❌ Mutate (Bad)
+        </button>
+        <button (click)="updateProductGood()" class="btn-good">
+          ✅ Immutable Update (Good)
+        </button>
+      </div>
+    </div>
+    
+    <div class="cart-summary">
+      <strong>Cart (@Output received):</strong>
+      <span>{{ totalCartItems() }} items</span>
+      <span>${{ totalCartValue().toFixed(2) }}</span>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid">
+    @for (product of products(); track product.id) {
+      <!--
+        @Input() bindings (Parent → Child):
+        - [product]="product" - Pass product data
+        - [showRating]="showRatings()" - Pass boolean
+        - [featured]="..." - Uses alias (maps to isFeatured)
+        - [maxQuantity]="5" - With transform
+        
+        @Output() bindings (Child → Parent):
+        - (addToCart)="handleAddToCart($event)" - Receive event
+        - (viewDetails)="handleViewDetails($event)" - Receive event
+        - (favoriteToggled)="..." - Uses alias output
+      -->
+      <app-product-card
+        [product]="product"
+        [showRating]="showRatings()"
+        [featured]="product.id === featuredProductId()"
+        [maxQuantity]="5"
+        (addToCart)="handleAddToCart($event)"
+        (viewDetails)="handleViewDetails($event)"
+        (favoriteToggled)="handleFavoriteToggle($event)"
+      />
+    } @empty {
+      <p>No products available</p>
+    }
+  </div>
+  
+  <!-- Explanation Panel -->
+  <div class="explanation-panel">
+    <h4>📚 What's Happening?</h4>
+    
+    <div class="explanation-section">
+      <h5>@Input() - Data flows DOWN</h5>
+      <code>[product]="product"</code>
+      <p>Parent passes product object to child component</p>
+    </div>
+    
+    <div class="explanation-section">
+      <h5>@Output() - Events flow UP</h5>
+      <code>(addToCart)="handleAddToCart($event)"</code>
+      <p>Child emits event, parent handles it</p>
+    </div>
+    
+    <div class="explanation-section">
+      <h5>OnPush Change Detection</h5>
+      <ul>
+        <li><strong>Mutate (Bad):</strong> Same reference = OnPush ignores</li>
+        <li><strong>Immutable (Good):</strong> New reference = OnPush detects</li>
+      </ul>
+    </div>
+  </div>
+</div>

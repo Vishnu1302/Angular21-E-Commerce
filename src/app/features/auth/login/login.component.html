@@ -1,0 +1,135 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Sign In</h1>
+    <p class="subtitle">Welcome back! Please enter your details.</p>
+
+    <!-- Server Error Display (using signal) -->
+    @if (serverError()) {
+      <div class="error-banner">
+        <span>⚠️ {{ serverError() }}</span>
+        <button (click)="serverError.set(null)" class="close-btn">×</button>
+      </div>
+    }
+
+    <!-- 
+      REACTIVE FORM
+      - [formGroup] binds the form to our FormGroup
+      - (ngSubmit) handles form submission
+    -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      
+      <!-- EMAIL FIELD -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email"
+          formControlName="email"
+          placeholder="Enter your email"
+          [class.invalid]="isFieldInvalid('email')"
+          [class.valid]="loginForm.get('email')?.valid && loginForm.get('email')?.touched"
+        >
+        
+        <!-- Validation Errors -->
+        @if (isFieldInvalid('email')) {
+          <span class="error-text">{{ getErrorMessage('email') }}</span>
+        }
+      </div>
+
+      <!-- PASSWORD FIELD -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input 
+            [type]="passwordFieldType()"
+            id="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            [class.invalid]="isFieldInvalid('password')"
+            [class.valid]="loginForm.get('password')?.valid && loginForm.get('password')?.touched"
+          >
+          <!-- Toggle password visibility (using signal) -->
+          <button 
+            type="button" 
+            (click)="togglePassword()" 
+            class="toggle-password"
+          >
+            {{ showPassword() ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        
+        <!-- Validation Errors -->
+        @if (isFieldInvalid('password')) {
+          <span class="error-text">{{ getErrorMessage('password') }}</span>
+        }
+      </div>
+
+      <!-- REMEMBER ME (using signal, not FormControl) -->
+      <div class="form-options">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [checked]="rememberMe()"
+            (change)="toggleRememberMe()"
+          >
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <button 
+        type="submit" 
+        class="submit-btn"
+        [disabled]="isButtonDisabled()"
+        [class.loading]="isLoading()"
+      >
+        @if (isLoading()) {
+          <span class="spinner"></span>
+        }
+        {{ buttonText() }}
+      </button>
+    </form>
+
+    <!-- SIGN UP LINK -->
+    <p class="signup-link">
+      Don't have an account? <a routerLink="/register">Sign up</a>
+    </p>
+  </div>
+
+  <!-- DEBUG PANEL: See signals in action -->
+  <div class="debug-panel">
+    <h4>🔍 Debug Panel (Signals & Form State)</h4>
+    
+    <div class="debug-section">
+      <h5>Signal Values:</h5>
+      <p><strong>isLoading:</strong> {{ isLoading() }}</p>
+      <p><strong>showPassword:</strong> {{ showPassword() }}</p>
+      <p><strong>rememberMe:</strong> {{ rememberMe() }}</p>
+      <p><strong>submitAttempts:</strong> {{ submitAttempts() }}</p>
+      <p><strong>serverError:</strong> {{ serverError() || 'null' }}</p>
+    </div>
+
+    <div class="debug-section">
+      <h5>Computed Values:</h5>
+      <p><strong>buttonText:</strong> {{ buttonText() }}</p>
+      <p><strong>passwordFieldType:</strong> {{ passwordFieldType() }}</p>
+      <p><strong>showValidationErrors:</strong> {{ showValidationErrors() }}</p>
+      <p><strong>isButtonDisabled:</strong> {{ isButtonDisabled() }}</p>
+    </div>
+
+    <div class="debug-section">
+      <h5>Form State (Reactive Forms):</h5>
+      <p><strong>Form Valid:</strong> {{ loginForm.valid }}</p>
+      <p><strong>Form Touched:</strong> {{ loginForm.touched }}</p>
+      <p><strong>Form Dirty:</strong> {{ loginForm.dirty }}</p>
+      <p><strong>Email Value:</strong> {{ loginForm.get('email')?.value || 'empty' }}</p>
+      <p><strong>Email Valid:</strong> {{ loginForm.get('email')?.valid }}</p>
+    </div>
+
+    <div class="debug-actions">
+      <button (click)="resetForm()">Reset Form</button>
+      <button (click)="submitAttempts.set(0)">Clear Attempts</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+<div class="page-container">
+  <!-- Compact Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>{{ title() }}</h1>
+      <p>Master Angular concepts through hands-on examples</p>
+    </div>
+    <a routerLink="/products" class="cta-button">Explore Demo</a>
+  </section>
+
+  <!-- Main Content Row -->
+  <div class="content-row">
+    <!-- Topics Table -->
+    <section class="topics-section">
+      <h2>Topics Covered <small>(click to explore)</small></h2>
+      <table class="topics-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Topic</th>
+            <th>Key Concepts</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (topic of topics(); track topic.id) {
+            <tr>
+              <td class="topic-number">{{ topic.id }}</td>
+              <td class="topic-info">
+                @if (topic.route) {
+                  <a [routerLink]="topic.route" class="topic-title">{{ topic.title }}</a>
+                } @else {
+                  <span class="topic-title">{{ topic.title }}</span>
+                }
+                <small>{{ topic.description }}</small>
+              </td>
+              <td class="concepts-cell">
+                @for (concept of topic.concepts; track concept) {
+                  <span class="concept-tag">{{ concept }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Quick Links Sidebar -->
+    <aside class="quick-links">
+      <h3>Quick Nav</h3>
+      <a routerLink="/products" class="quick-link">
+        <span class="link-icon">🛍️</span>
+        <div><strong>Products</strong><small>Input/Output</small></div>
+      </a>
+      <a routerLink="/login" class="quick-link">
+        <span class="link-icon">🔐</span>
+        <div><strong>Login</strong><small>Forms + Signals</small></div>
+      </a>
+      <a routerLink="/cart" class="quick-link">
+        <span class="link-icon">🛒</span>
+        <div><strong>Cart</strong><small>State Mgmt</small></div>
+      </a>
+    </aside>
+  </div>
+</div>

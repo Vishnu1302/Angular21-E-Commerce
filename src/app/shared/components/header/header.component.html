@@ -1,0 +1,36 @@
+<header class="main-header">
+  <div class="logo">
+    <a routerLink="/home">Angular Shop</a>
+  </div>
+  
+  <nav class="main-nav">
+    <a routerLink="/home" 
+       routerLinkActive="active" 
+       [routerLinkActiveOptions]="{ exact: true }">
+      Home
+    </a>
+    <a routerLink="/products" 
+       routerLinkActive="active">
+      Products
+    </a>
+    
+    <!-- Using computed signal: cartLabel() -->
+    <a routerLink="/cart" 
+       routerLinkActive="active"
+       [class.has-items]="hasItemsInCart()">
+      {{ cartLabel() }}
+    </a>
+  </nav>
+  
+  <div class="user-actions">
+    <!-- Using computed signal: welcomeMessage() -->
+    <span class="welcome">{{ welcomeMessage() }}</span>
+    
+    <!-- Using signal: isLoggedIn() with @if -->
+    @if (isLoggedIn()) {
+      <button (click)="logout()" class="logout-btn">Logout</button>
+    } @else {
+      <a routerLink="/login" class="login-btn">Login</a>
+    }
+  </div>
+</header>

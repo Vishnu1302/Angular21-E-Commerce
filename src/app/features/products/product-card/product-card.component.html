@@ -1,0 +1,99 @@
+<!-- 
+  SIGNAL INPUTS IN TEMPLATE
+  
+  Key difference: Signal inputs must be CALLED like functions!
+  
+  OLD (@Input): {{ product.name }}
+  NEW (input()): {{ product().name }}
+  
+  This is because input() returns a Signal<T>, not T directly.
+-->
+
+<div class="product-card" [class.featured]="isFeatured()">
+  <!-- Featured Badge -->
+  @if (isFeatured()) {
+    <span class="featured-badge">⭐ Featured</span>
+  }
+  
+  <!-- Product Image -->
+  <div class="product-image">
+    <img [src]="product().image" [alt]="product().name">
+    
+    <!-- Favorite Button -->
+    <button 
+      class="favorite-btn" 
+      [class.active]="isFavoriteState()"
+      (click)="toggleFavorite()"
+    >
+      {{ isFavoriteState() ? '❤️' : '🤍' }}
+    </button>
+  </div>
+  
+  <!-- Product Info -->
+  <div class="product-info">
+    <h3 class="product-name">{{ product().name }}</h3>
+    
+    <!-- Rating (conditional rendering via signal input) -->
+    @if (showRating()) {
+      <div class="product-rating">
+        @for (star of [1,2,3,4,5]; track star) {
+          <span [class.filled]="star <= product().rating">★</span>
+        }
+        <span class="rating-value">({{ product().rating }})</span>
+      </div>
+    }
+    
+    <!-- Price -->
+    <p class="product-price">
+      ${{ product().price.toFixed(2) }}
+    </p>
+    
+    <!-- Stock Status -->
+    <p class="stock-status" [class.out-of-stock]="!product().inStock">
+      {{ product().inStock ? '✓ In Stock' : '✗ Out of Stock' }}
+    </p>
+    
+    <!-- Quantity Selector -->
+    @if (product().inStock) {
+      <div class="quantity-selector">
+        <button 
+          (click)="decrementQuantity()" 
+          [disabled]="!canRemove()"
+        >−</button>
+        <span>{{ quantity() }}</span>
+        <button 
+          (click)="incrementQuantity()" 
+          [disabled]="!canAddMore()"
+        >+</button>
+      </div>
+      
+      <!-- Total Price (computed) - Now reactive with signal input! -->
+      <p class="total-price">
+        Total: <strong>${{ totalPrice().toFixed(2) }}</strong>
+      </p>
+    }
+  </div>
+  
+  <!-- Actions -->
+  <div class="product-actions">
+    <button 
+      class="btn-view" 
+      (click)="onViewDetails()"
+    >
+      View Details
+    </button>
+    
+    <button 
+      class="btn-add-cart" 
+      (click)="onAddToCart()"
+      [disabled]="!product().inStock"
+    >
+      {{ product().inStock ? 'Add to Cart' : 'Unavailable' }}
+    </button>
+  </div>
+  
+  <!-- Debug: Effect Trigger Counter -->
+  <div class="debug-info">
+    <small>effect() count: {{ effectTriggerCount() }}</small>
+  </div>
+</div>

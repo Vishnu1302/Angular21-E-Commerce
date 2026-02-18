@@ -1,0 +1,129 @@
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #667eea;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1.5rem;
+
+  a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    // When cart has items - highlight it
+    &.has-items {
+      background: #ffc107;
+      color: #333;
+      font-weight: bold;
+    }
+  }
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .welcome {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+
+  button, a {
+    color: white;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: none;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .login-btn {
+    background: white;
+    color: #667eea;
+    
+    &:hover {
+      background: #f0f0f0;
+      text-decoration: none;
+    }
+  }
+
+  .logout-btn {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+
+    &:hover {
+      background: #ff6b6b;
+      color: white;
+    }
+  }
+}
+
+// Demo Section Styles
+.signals-demo {
+  background: #f8f9fa;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #dee2e6;
+
+  h4 {
+    margin: 0 0 1rem;
+    color: #667eea;
+  }
+
+  .demo-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+
+    p {
+      margin: 0;
+      min-width: 200px;
+    }
+
+    button {
+      padding: 0.25rem 0.75rem;
+      border: 1px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background: #667eea;
+        color: white;
+      }
+    }
+  }
+}

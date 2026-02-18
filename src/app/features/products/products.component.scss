@@ -1,0 +1,168 @@
+:host {
+  display: block;
+  padding: 2rem;
+}
+
+.products-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #666;
+  }
+}
+
+// Control Panel
+.control-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  h4 {
+    margin: 0 0 1rem;
+    color: #334155;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    strong {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: white;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #f1f5f9;
+      }
+
+      &.btn-bad {
+        border-color: #fca5a5;
+        color: #dc2626;
+
+        &:hover {
+          background: #fef2f2;
+        }
+      }
+
+      &.btn-good {
+        border-color: #86efac;
+        color: #16a34a;
+
+        &:hover {
+          background: #f0fdf4;
+        }
+      }
+    }
+  }
+
+  .cart-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: #667eea;
+    color: white;
+    border-radius: 8px;
+    font-size: 0.875rem;
+
+    strong {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+}
+
+// Products Grid
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+// Explanation Panel
+.explanation-panel {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+
+  h4 {
+    margin: 0 0 1.5rem;
+    color: #fbbf24;
+  }
+
+  .explanation-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #334155;
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    h5 {
+      margin: 0 0 0.5rem;
+      color: #60a5fa;
+      font-size: 0.9rem;
+    }
+
+    code {
+      display: inline-block;
+      background: #334155;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+      color: #a5f3fc;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 0.875rem;
+    }
+
+    ul {
+      margin: 0.5rem 0 0;
+      padding-left: 1.25rem;
+
+      li {
+        margin-bottom: 0.25rem;
+        font-size: 0.875rem;
+        color: #94a3b8;
+
+        strong {
+          color: #e2e8f0;
+        }
+      }
+    }
+  }
+}

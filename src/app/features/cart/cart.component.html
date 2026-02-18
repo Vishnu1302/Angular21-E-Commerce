@@ -1,0 +1,31 @@
+<div class="cart-container">
+  <h1>Shopping Cart</h1>
+  
+  @if (cartItems().length > 0) {
+    <div class="cart-items">
+      @for (item of cartItems(); track item.id) {
+        <div class="cart-item">
+          <div class="item-info">
+            <h3>{{ item.name }}</h3>
+            <p class="price">${{ item.price }} x {{ item.quantity }}</p>
+          </div>
+          <div class="item-actions">
+            <span class="item-total">${{ item.price * item.quantity }}</span>
+            <button (click)="removeItem(item.id)" class="remove-btn">Remove</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="cart-summary">
+      <p>Total Items: {{ itemCount() }}</p>
+      <p class="total">Total: ${{ cartTotal().toFixed(2) }}</p>
+      <button class="checkout-btn">Proceed to Checkout</button>
+    </div>
+  } @else {
+    <div class="empty-cart">
+      <p>Your cart is empty</p>
+      <a routerLink="/products" class="shop-link">Continue Shopping</a>
+    </div>
+  }
+</div>
