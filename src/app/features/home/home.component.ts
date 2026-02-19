@@ -38,14 +38,14 @@ export class HomeComponent {
   readonly topics = signal<Topic[]>([
     {
       id: 1,
-      title: 'Routing & Lazy Loading',
+      title: 'Routing & Lazy Loading, Guards, Resolvers',
       description: 'Navigation, route configuration, code splitting',
       route: null,
       concepts: ['Routes array', 'loadComponent()', 'pathMatch', 'Wildcards', 'Route params']
     },
     {
       id: 2,
-      title: 'Reactive Forms + Signals',
+      title: 'Reactive Forms + Signals + Global Error Handling',
       description: 'Form handling with modern Angular signals',
       route: '/login',
       concepts: ['FormBuilder', 'FormGroup', 'Validators', 'signal()', 'computed()', 'effect()']
@@ -66,7 +66,7 @@ export class HomeComponent {
     },
     {
       id: 5,
-      title: 'Project Structure (DDD)',
+      title: 'Project Structure (DDD) + PWA',
       description: 'Domain-driven folder organization',
       route: null,
       concepts: ['features/', 'shared/', 'core/', 'models/', 'Standalone']

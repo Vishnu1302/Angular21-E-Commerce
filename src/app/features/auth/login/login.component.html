@@ -3,14 +3,6 @@
     <h1>Sign In</h1>
     <p class="subtitle">Welcome back! Please enter your details.</p>
 
-    <!-- Server Error Display (using signal) -->
-    @if (serverError()) {
-      <div class="error-banner">
-        <span>⚠️ {{ serverError() }}</span>
-        <button (click)="serverError.set(null)" class="close-btn">×</button>
-      </div>
-    }
-
     <!-- 
       REACTIVE FORM
       - [formGroup] binds the form to our FormGroup
@@ -101,13 +93,30 @@
   <div class="debug-panel">
     <h4>🔍 Debug Panel (Signals & Form State)</h4>
     
+    <!-- GUARD DEMO: Quick Auth Toggle -->
+    <div class="debug-section auth-demo">
+      <h5>🛡️ Auth Guard Demo:</h5>
+      <p><strong>isAuthenticated:</strong> 
+        <span [class.auth-true]="isAuthenticated()" [class.auth-false]="!isAuthenticated()">
+          {{ isAuthenticated() ? '✅ LOGGED IN' : '❌ LOGGED OUT' }}
+        </span>
+      </p>
+      <button 
+        (click)="quickLogin()" 
+        class="quick-login-btn"
+        [class.logout]="isAuthenticated()"
+      >
+        {{ isAuthenticated() ? '🚪 Quick Logout' : '⚡ Quick Login (Skip Form)' }}
+      </button>
+      <small>Toggle auth state instantly to test route guards</small>
+    </div>
+    
     <div class="debug-section">
       <h5>Signal Values:</h5>
       <p><strong>isLoading:</strong> {{ isLoading() }}</p>
       <p><strong>showPassword:</strong> {{ showPassword() }}</p>
       <p><strong>rememberMe:</strong> {{ rememberMe() }}</p>
       <p><strong>submitAttempts:</strong> {{ submitAttempts() }}</p>
-      <p><strong>serverError:</strong> {{ serverError() || 'null' }}</p>
     </div>
 
     <div class="debug-section">

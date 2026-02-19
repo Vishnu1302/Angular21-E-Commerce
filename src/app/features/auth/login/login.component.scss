@@ -256,6 +256,57 @@
         color: #a78bfa;
       }
     }
+    
+    // Auth demo section
+    &.auth-demo {
+      background: #1e293b;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #3b82f6;
+      
+      .auth-true {
+        color: #4ade80;
+        font-weight: bold;
+      }
+      
+      .auth-false {
+        color: #f87171;
+        font-weight: bold;
+      }
+      
+      small {
+        display: block;
+        margin-top: 0.5rem;
+        color: #94a3b8;
+        font-size: 0.75rem;
+      }
+    }
+  }
+  
+  .quick-login-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    
+    &.logout {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      
+      &:hover {
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      }
+    }
   }
 
   .debug-actions {

@@ -1,10 +1,9 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, map, startWith } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
 import { ProductCardComponent } from './product-card/product-card.component';
 import { Product, AddToCartEvent } from './models/product.model';
-import { ProductService } from '../../core/services/product.service';
 
 /**
  * ===========================================
@@ -12,24 +11,30 @@ import { ProductService } from '../../core/services/product.service';
  * ===========================================
  * 
  * This component demonstrates:
- * 1. SERVICE INJECTION - Using inject() to get ProductService
- * 2. RXJS SUBSCRIPTION - Subscribing to Observable data
- * 3. LIFECYCLE HOOKS - OnInit to load, OnDestroy to cleanup
+ * 1. RESOLVER DATA - Products pre-fetched via route resolver
+ * 2. ActivatedRoute - Access route data, params, queryParams
+ * 3. toSignal() - Convert route data Observable to Signal
  * 4. Passing data DOWN to child via @Input()
  * 5. Receiving events FROM child via @Output()
  * 
- * Data Flow:
+ * Data Flow (WITH RESOLVER):
  * 
- *   ProductService (Singleton)
+ *   Route Navigation
  *         │
- *         │ getProducts() → Observable<Product[]>
+ *         ▼
+ *   AuthGuard checks ─────► Denied? → Redirect to /login
+ *         │
+ *         ▼ Allowed
+ *   ProductsResolver
+ *         │
+ *         │ getProducts() → waits for data
  *         ▼
  *   ┌─────────────────────────────────────────┐
  *   │  ProductsComponent (Parent)             │
- *   │  - inject(ProductService)               │
- *   │  - subscribe() to Observable            │
+ *   │  - Data already available!              │
+ *   │  - No loading spinner needed            │
  *   │                                         │
- *   │  products signal ───@Input()───►        │
+ *   │  route.data['products'] ──@Input()──►   │
  *   │  handleAddToCart() ◄──@Output()───      │
  *   │                                         │
  *   │     ┌─────────────────────────────┐     │
@@ -51,35 +56,42 @@ export class ProductsComponent {
   // DEPENDENCY INJECTION
   // ========================================
   
-  // inject() - Modern way to inject services (Angular 14+)
-  private readonly productService = inject(ProductService);
+  /**
+   * ActivatedRoute - Access to route information
+   * 
+   * Provides:
+   * - route.data       → Resolver data (Observable)
+   * - route.params     → Route params like :id
+   * - route.queryParams → Query string ?foo=bar
+   * - route.snapshot   → One-time snapshot (not reactive)
+   */
+  private readonly route = inject(ActivatedRoute);
   
   // ========================================
-  // COMPONENT STATE with toSignal()
+  // RESOLVER DATA (No manual fetching!)
   // ========================================
   
   /**
-   * toSignal() - Converts Observable to Signal
+   * Products from Resolver
    * 
-   * Benefits over manual subscription:
-   * ✅ Auto-unsubscribes when component is destroyed
-   * ✅ No OnInit/OnDestroy lifecycle hooks needed
-   * ✅ No Subscription variable to manage
-   * ✅ Works seamlessly with signals and computed()
+   * The resolver already fetched the data before this component loaded.
+   * We just need to read it from route.data['products']
+   * 
+   * Benefits:
+   * ✅ No loading state needed - data is ready!
+   * ✅ No error handling here - resolver handled it
+   * ✅ Component stays clean and simple
    */
-  private readonly productsState = toSignal(
-    this.productService.getProducts().pipe(
-      map(products => ({ data: products, loading: false, error: '' })),
-      startWith({ data: [] as Product[], loading: true, error: '' }),
-      catchError(err => of({ data: [] as Product[], loading: false, error: 'Failed to load products' }))
+  readonly products = toSignal(
+    this.route.data.pipe(
+      map(data => data['products'] as Product[])
     ),
-    { initialValue: { data: [] as Product[], loading: true, error: '' } }
+    { initialValue: [] }
   );
   
-  // Computed values derived from productsState
-  readonly products = computed(() => this.productsState().data);
-  readonly isLoading = computed(() => this.productsState().loading);
-  readonly errorMessage = computed(() => this.productsState().error);
+  // No loading state needed - resolver guarantees data is ready!
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal('');
   
   // Cart items (receives data from child via @Output)
   readonly cartItems = signal<AddToCartEvent[]>([]);

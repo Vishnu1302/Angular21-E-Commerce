@@ -1,14 +1,13 @@
 import { Component, signal, computed, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { 
   ReactiveFormsModule, 
   FormBuilder, 
   FormGroup, 
-  Validators,
-  AbstractControl,
-  ValidationErrors
+  Validators
 } from '@angular/forms';
+import { toggleAuth, getAuthState } from '../../../core/guards/auth.guard';
 
 /**
  * ===========================================
@@ -25,6 +24,11 @@ import {
  * 1. signal() - Track form state (loading, error messages)
  * 2. computed() - Derive values (button labels, validation messages)
  * 3. effect() - Side effects (logging, analytics)
+ * 
+ * Guard Integration:
+ * - Receives returnUrl from authGuard redirect
+ * - Toggles auth state on successful login
+ * - Redirects back to original destination
  */
 @Component({
   selector: 'app-login',
@@ -36,6 +40,7 @@ import {
 export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // ========================================
   // REACTIVE FORM DEFINITION
@@ -49,9 +54,6 @@ export class LoginComponent implements OnInit {
   // Loading state - shows spinner during API call
   readonly isLoading = signal(false);
   
-  // Error message from server
-  readonly serverError = signal<string | null>(null);
-  
   // Track form submission attempts
   readonly submitAttempts = signal(0);
   
@@ -60,6 +62,9 @@ export class LoginComponent implements OnInit {
   
   // Remember me checkbox (could use FormControl, but signal works for simple toggle)
   readonly rememberMe = signal(false);
+  
+  // Auth state for demo (from guard)
+  readonly isAuthenticated = signal(getAuthState());
 
   // ========================================
   // COMPUTED SIGNALS - Derived State
@@ -98,14 +103,6 @@ export class LoginComponent implements OnInit {
         console.log(`📊 Login attempt #${attempts}`);
       }
     });
-    
-    // Log errors for debugging
-    effect(() => {
-      const error = this.serverError();
-      if (error) {
-        console.error(`🚨 Login error: ${error}`);
-      }
-    });
   }
 
   ngOnInit(): void {
@@ -132,15 +129,6 @@ export class LoginComponent implements OnInit {
       ]]
     });
 
-    // ========================================
-    // FORM VALUE CHANGES (RxJS + Signals)
-    // ========================================
-    // Listen to form changes and clear server error
-    this.loginForm.valueChanges.subscribe(() => {
-      if (this.serverError()) {
-        this.serverError.set(null);
-      }
-    });
   }
 
   // ========================================
@@ -215,7 +203,6 @@ export class LoginComponent implements OnInit {
     
     // Start loading
     this.isLoading.set(true);
-    this.serverError.set(null);
     
     // Simulate API call
     setTimeout(() => {
@@ -224,25 +211,45 @@ export class LoginComponent implements OnInit {
         console.log('✅ Login successful!');
         this.isLoading.set(false);
         
+        // Toggle auth state to authenticated
+        toggleAuth();
+        this.isAuthenticated.set(true);
+        
         // Save to localStorage if remember me is checked
         if (this.rememberMe()) {
           localStorage.setItem('rememberedEmail', email);
         }
         
-        // Navigate to home
-        this.router.navigate(['/home']);
+        // Get returnUrl from query params (set by authGuard)
+        const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/home';
+        console.log('🔄 Redirecting to:', returnUrl);
+        
+        // Navigate to the original destination or home
+        this.router.navigateByUrl(returnUrl);
       } else {
-        // Simulate error
-        this.serverError.set('Invalid email or password. Try test@test.com / 123456');
+        // Simulate error - let global error handler catch it
         this.isLoading.set(false);
+        throw new Error('Invalid email or password. Try test@test.com / 123456');
       }
     }, 1500);
+  }
+  
+  // ========================================
+  // DEMO: Quick Login Toggle (for testing guards)
+  // ========================================
+  quickLogin(): void {
+    const newState = toggleAuth();
+    this.isAuthenticated.set(newState);
+    
+    if (newState) {
+      const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/home';
+      this.router.navigateByUrl(returnUrl);
+    }
   }
   
   // Reset form
   resetForm(): void {
     this.loginForm.reset();
-    this.serverError.set(null);
     this.submitAttempts.set(0);
   }
 }
